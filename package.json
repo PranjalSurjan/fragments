@@ -11,5 +11,8 @@
     "url": "git+https://github.com/PranjalSurjan/fragments.git"
   },
   "author": "Pranjal Surjan",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.7.4"
+  }
 }
