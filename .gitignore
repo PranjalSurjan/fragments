@@ -1,3 +1,8 @@
+.env
+.aws/
+credentials
+*.pem
+
 # Logs
 logs
 *.log
