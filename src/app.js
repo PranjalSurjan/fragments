@@ -2,13 +2,12 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression'); // New: Add compression
+const passport = require('passport');
 
-// author and version from our package.json file
-// TODO: make sure you have updated your name in the `author` section of package.json
-const { author, version } = require('../package.json');
+const authenticate = require('./auth');
 const logger = require('./logger');
 const pino = require('pino-http')({
-  // Use our default logger instance, which is already configured
   logger,
 });
 
@@ -24,24 +23,21 @@ app.use(helmet());
 // Use CORS middleware
 app.use(cors());
 
-// Define a simple health check route
-app.get('/', (req, res) => {
-  // Clients shouldn't cache this response (always request it fresh)
-  res.setHeader('Cache-Control', 'no-cache');
+// Use gzip/deflate compression middleware
+app.use(compression());
 
-  // Send a 200 'OK' response with info about our repo
-  res.status(200).json({
-    status: 'ok',
-    description: 'fragments service running normally',
-    author,
-    // TODO: change this to use your GitHub username!
-    githubUrl: 'https://github.com/PranjalSurjan/fragments',
-    version,
-    timestamp: new Date().toISOString(),
-  });
-});
+// --- PASSPORT CONFIGURATION ---
 
-// Add 404 middleware to handle any requests for resources that can't be found
+// Set up our passport authentication middleware
+passport.use(authenticate.strategy());
+app.use(passport.initialize());
+
+// Define our routes - this points to src/routes/index.js
+app.use('/', require('./routes'));
+
+// --- ERROR HANDLING ---
+
+// Add 404 middleware
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -52,8 +48,7 @@ app.use((req, res) => {
   });
 });
 
-// Add error-handling middleware to deal with anything else
-// eslint-disable-next-line no-unused-vars
+// Add error-handling middleware
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || 'unable to process request';
@@ -71,5 +66,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export our `app` so we can access it in server.js
 module.exports = app;
