@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression'); // New: Add compression
 const passport = require('passport');
+const { createErrorResponse } = require('./response');
 
 const authenticate = require('./auth');
 const logger = require('./logger');
@@ -39,13 +40,7 @@ app.use('/', require('./routes'));
 
 // Add 404 middleware
 app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    error: {
-      message: 'not found',
-      code: 404,
-    },
-  });
+  res.status(404).json(createErrorResponse(404, 'not found'));
 });
 
 // Add error-handling middleware to deal with anything else
@@ -53,18 +48,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || 'unable to process request';
-
-  if (status > 499) {
-    logger.error({ err }, `Error processing request`);
-  }
-
-  res.status(status).json({
-    status: 'error',
-    error: {
-      message,
-      code: status,
-    },
-  });
+  res.status(status).json(createErrorResponse(status, message));
 });
 
 module.exports = app;

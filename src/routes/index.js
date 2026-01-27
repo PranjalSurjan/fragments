@@ -2,6 +2,9 @@
 
 const express = require('express');
 
+// Added the import for new response functions
+const { createSuccessResponse } = require('../response');
+
 // version and author from package.json
 const { version, author } = require('../../package.json');
 
@@ -28,14 +31,13 @@ router.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
 
   // Send a 200 'OK' response
-  res.status(200).json({
-    status: 'ok',
-    description: 'fragments service running normally',
-    author,
-    githubUrl: 'https://github.com/PranjalSurjan/fragments',
-    version,
-    timestamp: new Date().toISOString(),
-  });
+  res.status(200).json(
+    createSuccessResponse({
+      author,
+      githubUrl: 'https://github.com/PranjalSurjan/fragments',
+      version,
+      timestamp: new Date().toISOString(),
+    })
+  );
 });
-
 module.exports = router;
