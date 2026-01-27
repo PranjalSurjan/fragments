@@ -3,6 +3,8 @@
 credentials
 *.pem
 
+coverage/
+
 # Logs
 logs
 *.log
