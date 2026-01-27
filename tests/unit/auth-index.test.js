@@ -5,7 +5,7 @@ describe('Auth Strategy Selector', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    jest.resetModules(); // This is the secret sauce to re-run the index.js logic
+    jest.resetModules();
     process.env = { ...originalEnv };
   });
 
