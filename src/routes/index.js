@@ -26,18 +26,22 @@ router.use(`/v1`, authenticate(), require('./api'));
  * we'll respond with a 200 OK. If not, the server isn't healthy.
  * NOTE: This route is NOT protected by authenticate().
  */
+// src/routes/index.js
+
 router.get('/', (req, res) => {
   // Client's shouldn't cache this response (always request it fresh)
   res.setHeader('Cache-Control', 'no-cache');
 
   // Send a 200 'OK' response
-  res.status(200).json(
-    createSuccessResponse({
-      author,
-      githubUrl: 'https://github.com/PranjalSurjan/fragments',
-      version,
-      timestamp: new Date().toISOString(),
-    })
-  );
+  // We don't use createSuccessResponse here because the Lab 1 
+  // health check has a very specific flat structure.
+  res.status(200).json({
+    status: 'ok',
+    description: 'fragments service running normally', // This was missing!
+    author,
+    githubUrl: 'https://github.com/PranjalSurjan/fragments',
+    version,
+    timestamp: new Date().toISOString(),
+  });
 });
 module.exports = router;
