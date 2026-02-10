@@ -1,10 +1,10 @@
-// src/routes/api/get.js
+//src/routes/v1/get.js
 
 const { createSuccessResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
 
 /**
- * Get a list of fragment ids for the current user.
+ * Get a list of fragment ids for the current user
  */
 module.exports = async (req, res) => {
   // No try/catch needed here; app.js handles the failure

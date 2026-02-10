@@ -22,5 +22,24 @@ describe('GET /v1/fragments', () => {
     expect(Array.isArray(res.body.fragments)).toBe(true);
   });
 
+  test('should fail to read fragment from DB if id or ownerId is missing', () => {
+    const { readFragment } = require('../../src/model/data/memory/memory-db');
+
+    // Since validateIds throws immediately (synchronously), 
+    // we don't 'await' it or use '.rejects'.
+    expect(() => readFragment(null, null)).toThrow('ownerId and id are required');
+  });
+
+  test('should allow deleting a fragment from the DB', async () => {
+    const { writeFragment, deleteFragment, readFragment } = require('../../src/model/data/memory/memory-db');
+    const fragment = { ownerId: 'del-user', id: '123' };
+
+    // Testing lines 46-49 (deleteFragment)
+    await writeFragment(fragment);
+    await deleteFragment('del-user', '123');
+    const result = await readFragment('del-user', '123');
+    expect(result).toBeUndefined();
+  });
+
   // TODO: we'll need to add tests to check the contents of the fragments array later
 });

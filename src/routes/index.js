@@ -2,8 +2,8 @@
 
 const express = require('express');
 
-// Added the import for new response functions
-const { createSuccessResponse } = require('../response');
+// // Added the import for new response functions
+// const { createSuccessResponse } = require('../response');
 
 // version and author from package.json
 const { version, author } = require('../../package.json');
