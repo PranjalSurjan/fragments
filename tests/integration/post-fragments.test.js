@@ -1,10 +1,9 @@
 const request = require('supertest');
-const app = require('../../../src/app');
+const app = require('../../src/app');
 
 describe('POST /v1/fragments', () => {
   // We use a valid Base64 for Basic Auth (user1@email.com:password123)
   // Since we aren't in production, basic-auth.js will handle this.
-  const authHeader = 'Basic dXNlcjFAZW1haWwuY29tOnBhc3N3b3JkMTIz';
 
   test('authenticated users should be able to create a plain text fragment', async () => {
     const data = 'This is a test fragment';
