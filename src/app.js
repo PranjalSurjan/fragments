@@ -22,7 +22,12 @@ app.use(pino);
 app.use(helmet());
 
 // Use CORS middleware
-app.use(cors());
+app.use(
+  cors({
+    // Allow the browser to see the Location header
+    exposedHeaders: ['Location'],
+  })
+);
 
 // Use gzip/deflate compression middleware
 app.use(compression());
