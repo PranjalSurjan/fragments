@@ -1,3 +1,5 @@
+// src/model/fragment.js
+
 const { nanoid } = require('nanoid');
 const contentType = require('content-type');
 const {

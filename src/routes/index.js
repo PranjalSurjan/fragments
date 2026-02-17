@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
   // health check has a very specific flat structure.
   res.status(200).json({
     status: 'ok',
-    description: 'fragments service running normally', // This was missing!
+    description: 'fragments service running normally',
     author,
     githubUrl: 'https://github.com/PranjalSurjan/fragments',
     version,
