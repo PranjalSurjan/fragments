@@ -29,8 +29,13 @@ class Fragment {
 
   // Static method to check if a type is supported
   static isSupportedType(value) {
-    const { type } = contentType.parse(value);
-    return ['text/plain'].includes(type);
+    try {
+      const { type } = contentType.parse(value);
+      return ['text/plain'].includes(type);
+    } catch {
+      // We don't need the 'err' variable here since we just return false
+      return false;
+    }
   }
 
   // Save this fragment instance's metadata to the DB
@@ -40,12 +45,14 @@ class Fragment {
   }
 
   // Save the actual buffer data for this fragment
-  setData(data) {
+  async setData(data) {
     if (!Buffer.isBuffer(data)) {
       throw new Error('data must be a Buffer');
     }
     this.size = Buffer.byteLength(data);
-    this.save();
+
+    // Fix for Race Condition: await save() so metadata is persisted 
+    await this.save();
     return writeFragmentData(this.ownerId, this.id, data);
   }
 

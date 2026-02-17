@@ -19,7 +19,6 @@ module.exports = async (req, res) => {
     });
 
     // 3. Save the fragment metadata and the actual data buffer
-    await fragment.save();
     await fragment.setData(req.body);
 
     logger.info({ fragmentId: fragment.id }, 'Fragment created and data saved');
@@ -27,7 +26,7 @@ module.exports = async (req, res) => {
     // 4. Construct the full URL for the Location header
     // We use the API_URL env var if it exists, otherwise fall back to the host header
     const api_url = process.env.API_URL || `${req.protocol}://${req.get('host')}`;
-    const location = `${api_url}/v1/fragments/${fragment.id}`;
+    const location = new URL(`/v1/fragments/${fragment.id}`, api_url).href;
 
     // 5. Send the 201 Created response with the required headers and JSON
     res.setHeader('Location', location);
