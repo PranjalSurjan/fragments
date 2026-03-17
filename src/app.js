@@ -32,6 +32,18 @@ app.use(
 // Use gzip/deflate compression middleware
 app.use(compression());
 
+app.use(
+  express.raw({
+    type: [
+      'text/plain',
+      'text/markdown',
+      'text/html',
+      'application/json'
+    ],
+    limit: '5mb', // Reasonable limit for fragment data
+  })
+);
+
 // --- PASSPORT CONFIGURATION ---
 
 // Set up our passport authentication middleware

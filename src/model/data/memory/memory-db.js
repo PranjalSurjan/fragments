@@ -35,11 +35,17 @@ const readFragmentData = (ownerId, id) => {
 };
 
 // Returns an array of fragment IDs for a specific owner
-const listFragments = (ownerId) => {
-  const ids = Array.from(metadata.values())
-    .filter((f) => f.ownerId === ownerId)
-    .map((f) => f.id);
-  return Promise.resolve(ids);
+/**
+ * Returns an array of fragment IDs or expanded metadata for a specific owner
+ * @param {string} ownerId 
+ * @param {boolean} expand - whether to return full objects or just IDs
+ */
+const listFragments = (ownerId, expand = false) => {
+  const values = Array.from(metadata.values()).filter((f) => f.ownerId === ownerId);
+
+  // If expand is true, return the full metadata objects. 
+  // Otherwise, return just the IDs.
+  return Promise.resolve(expand ? values : values.map((f) => f.id));
 };
 
 const deleteFragment = (ownerId, id) => {
