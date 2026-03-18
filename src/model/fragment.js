@@ -30,10 +30,18 @@ class Fragment {
   // Static method to check if a type is supported
   static isSupportedType(value) {
     try {
+      // Use the content-type library to parse the header (already imported)
       const { type } = contentType.parse(value);
-      return ['text/plain'].includes(type);
+
+      const supportedTypes = [
+        'text/plain',
+        'text/markdown',
+        'text/html',
+        'application/json'
+      ];
+
+      return supportedTypes.includes(type);
     } catch {
-      // We don't need the 'err' variable here since we just return false
       return false;
     }
   }
@@ -62,8 +70,14 @@ class Fragment {
   }
 
   // Static method to find all fragments for a user
-  static byUser(ownerId) {
-    return listFragments(ownerId);
+  /**
+    * Returns an array of fragment ids or fragment objects for the given user
+    * @param {string} ownerId user's sub
+    * @param {boolean} expand whether to return full metadata objects or just ids
+    * @returns {Promise<Array<string|Fragment>>}
+    */
+  static byUser(ownerId, expand = false) {
+    return listFragments(ownerId, expand);
   }
 
   // Static method to find a specific fragment by ID

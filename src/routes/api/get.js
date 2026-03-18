@@ -4,14 +4,17 @@ const { createSuccessResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
 
 /**
- * Get a list of fragment ids for the current user.
+ * Get a list of fragment ids (or objects if expand=1) for the current user.
  */
 module.exports = async (req, res) => {
-  // No try/catch needed here; app.js handles the failure
-  const ids = await Fragment.byUser(req.user);
+  // Check if the query parameter 'expand' is set to '1'
+  const expand = req.query.expand === '1';
+
+  const fragments = await Fragment.byUser(req.user, expand);
+
   res.status(200).json(
     createSuccessResponse({
-      fragments: ids,
+      fragments: fragments,
     })
   );
 };
