@@ -12,7 +12,6 @@ const rawBody = () =>
     type: (req) => {
       try {
         const { type } = contentType.parse(req);
-        // This will now return true for text/markdown because we updated the class!
         return Fragment.isSupportedType(type);
       } catch {
         return false;

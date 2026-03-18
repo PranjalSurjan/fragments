@@ -2,7 +2,6 @@
 
 const { nanoid } = require('nanoid');
 const contentType = require('content-type');
-const md = require('markdown-it')();
 const {
   readFragment,
   writeFragment,
@@ -28,42 +27,15 @@ class Fragment {
     this.size = size;
   }
 
-  /**
-   * Static method to check if a type is supported
-   * Supported: text/plain, text/markdown, text/html, application/json
-   */
+  // Static method to check if a type is supported
   static isSupportedType(value) {
     try {
       const { type } = contentType.parse(value);
-      return [
-        'text/plain',
-        'text/markdown',
-        'text/html',
-        'application/json',
-      ].includes(type);
-    } catch (err) {
+      return ['text/plain'].includes(type);
+    } catch {
+      // We don't need the 'err' variable here since we just return false
       return false;
     }
-  }
-
-  /**
-   * Returns an array of mime types that this fragment can be converted to.
-   * For now, only text/markdown supports an alternative (text/html).
-   */
-  get formats() {
-    const { type } = contentType.parse(this.type);
-    if (type === 'text/markdown') {
-      return ['text/markdown', 'text/html'];
-    }
-    return [this.type];
-  }
-
-  /**
-   * Returns true if the given extension is supported for this fragment's type.
-   */
-  static isSupportedExtension(ext) {
-    const supportedExtensions = ['.txt', '.md', '.html', '.json'];
-    return supportedExtensions.includes(ext.toLowerCase());
   }
 
   // Save this fragment instance's metadata to the DB
@@ -72,40 +44,29 @@ class Fragment {
     return writeFragment(this);
   }
 
-  /**
-   * Save the actual buffer data for this fragment
-   * @param {Buffer} data 
-   */
+  // Save the actual buffer data for this fragment
   async setData(data) {
     if (!Buffer.isBuffer(data)) {
       throw new Error('data must be a Buffer');
     }
     this.size = Buffer.byteLength(data);
+
+    // Fix for Race Condition: await save() so metadata is persisted 
     await this.save();
     return writeFragmentData(this.ownerId, this.id, data);
   }
 
-  /**
-   * Retrieve the raw data for this fragment
-   */
+  // Retrieve the data for this fragment
   getData() {
     return readFragmentData(this.ownerId, this.id);
   }
 
-  /**
-   * Static method to find all fragments for a user
-   * @param {string} ownerId 
-   * @param {boolean} expand - whether to return full objects or just IDs
-   */
-  static byUser(ownerId, expand = false) {
-    return listFragments(ownerId, expand);
+  // Static method to find all fragments for a user
+  static byUser(ownerId) {
+    return listFragments(ownerId);
   }
 
-  /**
-   * Static method to find a specific fragment by ID
-   * @param {string} ownerId 
-   * @param {string} id 
-   */
+  // Static method to find a specific fragment by ID
   static async byId(ownerId, id) {
     const metadata = await readFragment(ownerId, id);
     if (!metadata) {
