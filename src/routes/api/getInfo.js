@@ -1,19 +1,15 @@
-//src/routes/api/getInfo.js
+// src/routes/api/getInfo.js
+const { Fragment } = require('../../model/fragment');
+const { createSuccessResponse, createErrorResponse } = require('../../response');
 
+module.exports = async (req, res) => {
+  try {
+    // 1. Find the fragment metadata
+    const fragment = await Fragment.byId(req.user, req.params.id);
 
-const { createSuccessResponse } = require('../../response');
-
-module.exports = (req, res) => {
-  res.status(200).json(
-    createSuccessResponse({
-      fragment: {
-        id: req.params.id,
-        ownerId: req.user,
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-        type: 'text/plain',
-        size: 0,
-      },
-    })
-  );
+    // 2. Return the fragment object inside a success response
+    res.status(200).json(createSuccessResponse({ fragment }));
+  } catch (err) {
+    res.status(404).json(createErrorResponse(404, err.message));
+  }
 };
