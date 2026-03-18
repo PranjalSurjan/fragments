@@ -2,8 +2,9 @@ const request = require('supertest');
 const app = require('../../src/app');
 
 describe('GET /v1/fragments', () => {
-  const user = 'test-user-get@email.com';
-  const pass = 'test-password-get';
+  // Use the credentials found in your tests/.htpasswd
+  const user = 'test-user1@fragments-testing.com';
+  const pass = 'test-password1';
 
   test('should return an empty list if user has no fragments', async () => {
     const res = await request(app)
@@ -23,6 +24,8 @@ describe('GET /v1/fragments', () => {
       .set('Content-Type', 'text/plain')
       .send('testing expansion');
 
+    // Check that POST succeeded so fragment.id exists
+    expect(postRes.status).toBe(201);
     const fragmentId = postRes.body.fragment.id;
 
     // 2. Get the expanded list
@@ -31,8 +34,8 @@ describe('GET /v1/fragments', () => {
       .auth(user, pass);
 
     expect(res.status).toBe(200);
-    // Check that we got an object with the right ID
-    const found = res.body.fragments.find(f => f.id === fragmentId);
+    // Check that we got an object with the right ID in the array
+    const found = res.body.fragments.find((f) => f.id === fragmentId);
     expect(found).toBeDefined();
     expect(typeof found).toBe('object');
     expect(found.type).toBe('text/plain');
@@ -45,6 +48,8 @@ describe('GET /v1/fragments', () => {
       .auth(user, pass)
       .set('Content-Type', 'text/plain')
       .send(content);
+
+    expect(postRes.status).toBe(201);
 
     const res = await request(app)
       .get(`/v1/fragments/${postRes.body.fragment.id}`)
@@ -61,6 +66,8 @@ describe('GET /v1/fragments', () => {
       .auth(user, pass)
       .set('Content-Type', 'text/plain')
       .send('info test');
+
+    expect(postRes.status).toBe(201);
 
     const res = await request(app)
       .get(`/v1/fragments/${postRes.body.fragment.id}/info`)
