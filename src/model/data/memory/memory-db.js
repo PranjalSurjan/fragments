@@ -1,4 +1,4 @@
-//src/model/data/memory/memory-db.js
+// src/model/data/memory/memory-db.js
 
 // Simple In-Memory Database using two Maps
 const data = new Map();
@@ -34,12 +34,14 @@ const readFragmentData = (ownerId, id) => {
   return Promise.resolve(data.get(`${ownerId}:${id}`));
 };
 
-// Returns an array of fragment IDs for a specific owner
-const listFragments = (ownerId) => {
-  const ids = Array.from(metadata.values())
-    .filter((f) => f.ownerId === ownerId)
-    .map((f) => f.id);
-  return Promise.resolve(ids);
+// Returns an array of fragment IDs or metadata objects for a specific owner
+const listFragments = (ownerId, expand = false) => {
+  const fragments = Array.from(metadata.values()).filter((f) => f.ownerId === ownerId);
+
+  // If expand is true, return the full objects; otherwise, return just the ids
+  const results = expand ? fragments : fragments.map((f) => f.id);
+
+  return Promise.resolve(results);
 };
 
 const deleteFragment = (ownerId, id) => {
