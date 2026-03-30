@@ -109,6 +109,5 @@
     },
     "registeredAt": "2026-03-30T15:58:02.667Z",
     "registeredBy": "arn:aws:iam::142545059168:user/odl_user_2023460",
-    "enableFaultInjection": false,
     "tags": []
 }
