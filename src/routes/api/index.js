@@ -2,7 +2,6 @@
 const express = require('express');
 const contentType = require('content-type');
 const { Fragment } = require('../../model/fragment');
-
 const router = express.Router();
 
 const rawBody = () =>
@@ -19,12 +18,10 @@ const rawBody = () =>
     },
   });
 
-// Existing routes
 router.get('/fragments', require('./get'));
 router.post('/fragments', rawBody(), require('./post'));
-
-// Lab 6 Step 21 / Assignment 2 Implementation
 router.get('/fragments/:id', require('./getById'));
 router.get('/fragments/:id/info', require('./getInfo'));
+router.delete('/fragments/:id', require('./delete'));
 
 module.exports = router;

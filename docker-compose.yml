@@ -1,5 +1,4 @@
 # docker-compose.yml
-
 services:
   # Fragments microservice API server
   fragments:
@@ -10,6 +9,8 @@ services:
       - HTPASSWD_FILE=tests/.htpasswd
       - FRAGMENTS_LOG_LEVEL=${FRAGMENTS_LOG_LEVEL:-info}
       - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
       - AWS_S3_ENDPOINT_URL=http://localstack:4566
       - AWS_DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
       - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME:-fragments}
@@ -19,14 +20,12 @@ services:
       - NODE_ENV=development
     ports:
       - '8080:8080'
-
   # DynamoDB Local
   dynamodb-local:
     image: amazon/dynamodb-local
     ports:
       - '8000:8000'
     command: ['-jar', 'DynamoDBLocal.jar', '-inMemory']
-
   # LocalStack for S3
   localstack:
     image: localstack/localstack:0.14.5

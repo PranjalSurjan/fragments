@@ -2,7 +2,7 @@
 POST http://localhost:8080/v1/fragments
 Content-Type: text/plain; charset=utf-8
 [BasicAuth]
-test-user1@fragments-testing.com:password1
+test-user1@fragments-testing.com:test-password1
 `Charset test content`
 
 HTTP/1.1 201
@@ -11,7 +11,7 @@ url: header "Location"
 
 GET {{url}}
 [BasicAuth]
-test-user1@fragments-testing.com:password1
+test-user1@fragments-testing.com:test-password1
 
 HTTP/1.1 200
 [Asserts]
