@@ -10,15 +10,12 @@
 # This will update `version` in package.json to `0.5.0` and create a new
 # tag, `v0.5.0` in git. We'll then use this tag (i.e., `v0.5.0`) to tag
 # our docker image before we push to AWS.
-
 name: cd
-
 on:
   push:
     # Whenever a new tag is pushed starting with v...
     tags:
       - 'v**'
-
 jobs:
   aws:
     name: AWS
@@ -26,11 +23,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
       # Use buildx for optimized build steps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       # Configure AWS Credentials using GitHub Secrets
       - name: Configure AWS Credentials using Secrets
         uses: aws-actions/configure-aws-credentials@v4
@@ -38,22 +33,46 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
       # Login to our ECR repository
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
       # Build and Push the Image to Amazon ECR
       - name: Build and push to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPO: fragments
-          # Uses the git tag version (e.g., v0.5.0)
           VERSION_TAG: ${{ github.ref_name }}
         uses: docker/build-push-action@v6
         with:
           push: true
-          # Tags the image with both the version and 'latest'
           tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}, ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
-
+      # Update the ECS task definition with the new image
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: update-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPO: fragments
+          VERSION_TAG: ${{ github.ref_name }}
+        with:
+          task-definition: fragments-definition.json
+          container-name: fragments-container
+          image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}
+          environment-variables: |
+            FRAGMENTS_LOG_LEVEL=debug
+            NODE_ENV=production
+            AWS_REGION=us-east-1
+            AWS_S3_BUCKET_NAME=pranjal-fragments
+            AWS_COGNITO_POOL_ID=${{ secrets.AWS_COGNITO_POOL_ID }}
+            AWS_COGNITO_CLIENT_ID=${{ secrets.AWS_COGNITO_CLIENT_ID }}
+            API_URL=http://98.94.2.121
+            PORT=80
+      # Deploy the updated task definition to ECS
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.update-task-def.outputs.task-definition }}
+          cluster: fragments-pranjal
+          service: fragments-service
+          wait-for-service-stability: true
