@@ -41,6 +41,10 @@
                     "value": "pranjal-fragments"
                 },
                 {
+                    "name": "AWS_DYNAMODB_TABLE_NAME",
+                    "value": "fragments"
+                },
+                {
                     "name": "AWS_COGNITO_CLIENT_ID",
                     "value": "16lj145rm56ko81343o1ijt1hf"
                 }
