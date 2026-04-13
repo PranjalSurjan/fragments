@@ -47,6 +47,10 @@
                 {
                     "name": "AWS_COGNITO_CLIENT_ID",
                     "value": "16lj145rm56ko81343o1ijt1hf"
+                },
+                {
+                    "name": "API_URL",
+                    "value": "http://fragments-lb-1462327554.us-east-1.elb.amazonaws.com"
                 }
             ],
             "environmentFiles": [],
