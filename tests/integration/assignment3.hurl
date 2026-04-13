@@ -158,3 +158,19 @@ GET {{text_url}}
 test-user1@fragments-testing.com:test-password1
 
 HTTP/1.1 404
+
+
+
+# ============================================================
+# 14. GET fragment stats (bonus: analytics)
+# ============================================================
+GET http://localhost:8080/v1/fragments/stats
+[BasicAuth]
+test-user1@fragments-testing.com:test-password1
+
+HTTP/1.1 200
+[Asserts]
+jsonpath "$.status" == "ok"
+jsonpath "$.stats.totalFragments" isInteger
+jsonpath "$.stats.totalSize" isInteger
+jsonpath "$.stats.byType" isCollection
