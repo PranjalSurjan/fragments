@@ -68,7 +68,8 @@ module.exports = async (req, res) => {
       }
 
       // Case: JSON to YAML
-      else if (fragment.type === 'application/json' && targetMimeType === 'application/yaml') {
+      else if (fragment.type === 'application/json' &&
+        (targetMimeType === 'application/yaml' || targetMimeType === 'text/yaml')) {
         data = Buffer.from(yaml.dump(JSON.parse(data.toString())));
         responseContentType = 'application/yaml';
       }
